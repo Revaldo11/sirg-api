@@ -7,6 +7,7 @@ use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\LecturerController;
 use App\Http\Controllers\API\ResearchController;
+use App\Http\Controllers\API\CreationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,3 +41,5 @@ Route::post('login', [UserController::class, 'login']);
 Route::post('login-dosen', [LecturerController::class, 'loginDosen']);
 Route::get('dosen', [LecturerController::class, 'index']);
 Route::get('riset/{filename}', [ResearchController::class, 'download']);
+Route::get('karya', [CreationController::class, 'all']);
+Route::post('karya/create', [CreationController::class, 'create']);
