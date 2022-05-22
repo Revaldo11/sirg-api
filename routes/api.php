@@ -32,9 +32,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('riset/create', [ResearchController::class, 'create']);
     Route::delete('riset/{id}', [ResearchController::class, 'delete']);
     Route::post('riset/{id}', [ResearchController::class, 'update']);
+    Route::post('dosen/{id}', [LecturerController::class, 'update']);
+    Route::delete('dosen/{id}', [LecturerController::class, 'delete']);
 });
 
-Route::post('dosen/{id}', [LecturerController::class, 'update']);
 Route::post('admin/register', [AdminController::class, 'register']);
 Route::get('group', [GroupController::class, 'all']);
 Route::get('riset', [ResearchController::class, 'all']);

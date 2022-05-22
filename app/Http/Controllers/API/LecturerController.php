@@ -123,6 +123,21 @@ class LecturerController extends Controller
         }
     }
 
+    public function delete($id)
+    {
+        $dosen = Lecturer::find($id);
+        if ($dosen) {
+            $dosen->delete();
+            return ResponseFormatter::success([
+                'message' => 'Data dosen berhasil di hapus',
+            ], 200);
+        } else {
+            return ResponseFormatter::error([
+                'message' => 'Dosen not found',
+            ], 404);
+        }
+    }
+
     public function loginDosen(Request $request)
     {
         try {
