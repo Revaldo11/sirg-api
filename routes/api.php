@@ -8,6 +8,7 @@ use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\LecturerController;
 use App\Http\Controllers\API\ResearchController;
 use App\Http\Controllers\API\CreationController;
+use App\Http\Controllers\API\JudulPaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,3 +44,5 @@ Route::get('dosen', [LecturerController::class, 'index']);
 Route::get('riset/{filename}', [ResearchController::class, 'download']);
 Route::get('karya', [CreationController::class, 'all']);
 Route::post('karya/create', [CreationController::class, 'create']);
+Route::get('judulpa', [JudulPaController::class, 'index']);
+Route::post('judulpa/create', [JudulPaController::class, 'create']);
