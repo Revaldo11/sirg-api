@@ -9,6 +9,7 @@ use App\Http\Controllers\API\LecturerController;
 use App\Http\Controllers\API\ResearchController;
 use App\Http\Controllers\API\CreationController;
 use App\Http\Controllers\API\JudulPaController;
+use App\Models\Lecturer;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('riset/{id}', [ResearchController::class, 'update']);
     Route::post('dosen/{id}', [LecturerController::class, 'update']);
     Route::delete('dosen/{id}', [LecturerController::class, 'delete']);
+    Route::post('karya/{id}', [CreationController::class, 'update']);
+    Route::delete('karya/{id}', [CreationController::class, 'delete']);
 });
 
 Route::post('admin/register', [AdminController::class, 'register']);
