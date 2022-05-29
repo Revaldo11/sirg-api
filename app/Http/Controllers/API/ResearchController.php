@@ -65,22 +65,22 @@ class ResearchController extends Controller
                 'description' => ['required', 'string', 'max:255'],
                 'date' => ['required', 'string'],
                 'author' => ['required', 'string', 'max:255'],
-                'file' => ['required', 'mimes:doc,docx,pdf,txt,csv', 'max:2048'],
+                'file' => ['required', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
                 'group_id' => ['required', 'integer'],
             ]);
 
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-                $fileName = $file->getClientOriginalName();
-                $file->move(public_path('files'), $fileName);
-            }
+            $file = $request->file('file')->getClientOriginalName();
+            $file_name = pathinfo($file, PATHINFO_FILENAME);
+            $file_extension = $request->file('file')->getClientOriginalExtension();
+            $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+            $request->file('file')->move(public_path('public/files'), $file_name_to_store);
 
             Research::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'date' => $request->date,
                 'author' => $request->author,
-                'file' => $request->file,
+                'file' => $file_name_to_store,
                 'user_id' => Auth::user()->id,
                 'group_id' => $request->group_id,
             ]);
@@ -106,7 +106,7 @@ class ResearchController extends Controller
             'description' => ['nullable', 'string', 'max:255'],
             'date' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:255'],
-            'file' => ['nullable', 'string', 'max:255'],
+            // 'file' => ['nullable', 'string', 'max:255'],
         ]);
         $riset = Research::find($id);
 
