@@ -7,6 +7,7 @@ use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Creation;
+use App\Models\Research;
 use Illuminate\Database\QueryException;
 
 class CreationController extends Controller
@@ -53,7 +54,7 @@ class CreationController extends Controller
             $request->validate([
                 'title' => ['required', 'string', 'max:255'],
                 'description' => ['required', 'string', 'max:255'],
-                'group_id' => ['nullable', 'integer'],
+                'group_id' => ['required', 'integer'],
             ]);
 
             Creation::create([
@@ -70,6 +71,48 @@ class CreationController extends Controller
                 'massage' => 'error',
                 'data' => $error,
             ], 'terjadi kesalahan saat menyimpan data karya', 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
+            'group_id' => ['nullable', 'integer'],
+        ]);
+        $karya = Creation::find($id);
+
+        if ($karya) {
+            $karya->update($data);
+
+            return ResponseFormatter::success([
+                'data' => $karya,
+                'message' => 'data karya berhasil di update',
+            ]);
+        } else {
+            return ResponseFormatter::error([
+                'data' => null,
+                'message' => 'terjadi kesalahan dalam update data karya',
+            ], 400);
+        }
+    }
+    public function delete($id)
+    {
+        $karya = Creation::find($id);
+
+        if ($karya) {
+            $karya->delete();
+
+            return ResponseFormatter::success([
+                'data' => $karya,
+                'message' => 'data karya tersebut berhasil dihapus',
+            ]);
+        } else {
+            return ResponseFormatter::error([
+                'data' => $karya,
+                'message' => 'data gagal untuk dihapus',
+            ], 400);
         }
     }
 }
