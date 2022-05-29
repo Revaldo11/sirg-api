@@ -69,6 +69,7 @@ class ResearchController extends Controller
                 'group_id' => ['required', 'integer'],
             ]);
 
+
             $file = $request->file('file')->getClientOriginalName();
             $file_name = pathinfo($file, PATHINFO_FILENAME);
             $file_extension = $request->file('file')->getClientOriginalExtension();
