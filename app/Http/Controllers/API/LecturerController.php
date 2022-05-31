@@ -8,6 +8,7 @@ use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\Rules\Password;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 
@@ -15,11 +16,11 @@ class LecturerController extends Controller
 {
     public function index(Request $request)
     {
-        $dosen = Lecturer::all();
-        // $dosen = DB::table('lecturers')
-        //     ->join('users', 'lecturers.user_id', '=', 'users.id')
-        //     ->select('lecturers.*', 'users.name as user_name')
-        //     ->get();
+        // $dosen = Lecturer::all();
+        $dosen = DB::table('lecturers')
+            ->join('groups', 'lecturers.group_id', '=', 'groups.id')
+            ->select('lecturers.*', 'groups.title as group_name')
+            ->get();
 
         $id = $request->input('id');
 
@@ -46,7 +47,7 @@ class LecturerController extends Controller
     {
         try {
             $request->validate([
-                'nip' => ['required', 'string', 'max:255', 'unique:lecturers'],
+                'nip' => ['required', 'string', 'max:255'],
                 'name' => ['required', 'string', 'max:255'],
                 'phone' => ['required', 'string', 'max:255'],
                 'year_lecturer' => ['required', 'string', 'max:255'],
@@ -54,6 +55,7 @@ class LecturerController extends Controller
                 'achievement_lecturer' => ['required', 'string', 'max:255'],
                 'password' => ['required', 'string', new Password],
                 'path_photo' => ['nullable', 'string', 'max:255'],
+                // 'group_id' => ['required', 'integer'],
             ]);
 
             // Create user
@@ -64,6 +66,7 @@ class LecturerController extends Controller
                 'year_lecturer' => $request->year_lecturer,
                 'community_service' => $request->community_service,
                 'achievement_lecturer' => $request->achievement_lecturer,
+                'group_id' => Auth::user()->id,
                 'password' => Hash::make($request->password),
             ]);
 
@@ -95,6 +98,7 @@ class LecturerController extends Controller
                 'community_service' => ['required', 'string', 'max:255'],
                 'achievement_lecturer' => ['required', 'string', 'max:255'],
                 'path_photo' => ['nullable', 'string', 'max:255'],
+                'group_id' => ['required', 'integer'],
             ]);
 
             $dosen = Lecturer::find($id);
