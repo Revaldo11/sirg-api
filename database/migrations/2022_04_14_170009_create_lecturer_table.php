@@ -15,7 +15,7 @@ class CreateLecturerTable extends Migration
     {
         Schema::create('lecturers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('nip')->unique();
+            $table->bigInteger('nip');
             $table->string('name');
             $table->bigInteger('phone');
             $table->integer('year_lecturer');
@@ -23,6 +23,7 @@ class CreateLecturerTable extends Migration
             $table->string('achievement_lecturer');
             $table->string('password');
             $table->string('path_photo')->nullable();
+            $table->foreignId('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
