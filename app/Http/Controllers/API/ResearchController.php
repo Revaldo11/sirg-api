@@ -107,7 +107,7 @@ class ResearchController extends Controller
             'description' => ['nullable', 'string', 'max:255'],
             'date' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:255'],
-            // 'file' => ['nullable', 'string', 'max:255'],
+            'file' => ['nullable', 'string', 'max:255'],
         ]);
         $riset = Research::find($id);
 
@@ -147,16 +147,20 @@ class ResearchController extends Controller
 
     public function download($filename)
     {
-        $file = public_path() . "/files/" . $filename;
-        $headers = array(
-            'Content-Type: application/pdf',
-        );
-        // return response()->download($file, $filename, $headers);
-        return ResponseFormatter::success([
-            'data' => $file,
-            'filename' => $filename,
-            'headers' => $headers,
-            'message' => 'Data riset berhasil di download',
-        ], 200);
+        $riset = Research::where('file', $filename)->first();
+
+        if ($riset) {
+            $file = $riset->file;
+            $path = public_path('public/files/' . $file);
+            $file_name = pathinfo($file, PATHINFO_FILENAME);
+            $file_extension = pathinfo($file, PATHINFO_EXTENSION);
+            $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+            return response()->download($path, $file_name_to_store);
+        } else {
+            return ResponseFormatter::error([
+                'data' => null,
+                'message' => 'Data riset tidak ditemukan',
+            ], 400);
+        }
     }
 }
