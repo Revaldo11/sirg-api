@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\User;
+use App\Models\Lecturer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,14 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Group extends Model
 {
     use HasFactory, SoftDeletes;
-
-    // protected $fillable = [
-    //     'title',
-    //     'description',
-    //     'path',
-    //     'user_id',
-    //     'research_id',
-    // ];
 
     protected $fillable = [
         'title',
@@ -29,6 +21,11 @@ class Group extends Model
 
     public function research()
     {
-        return $this->hasMany(Research::class);
+        return $this->hasMany(Research::class,);
+    }
+
+    public function lecturer()
+    {
+        return $this->belongsToMany(Lecturer::class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Group;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,10 +21,16 @@ class Lecturer extends Model
         'achievement_lecturer',
         'password',
         'path_photo',
+        'group_id',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function group()
+    {
+        return $this->belongsToMany(Group::class);
+    }
 }
