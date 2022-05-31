@@ -18,6 +18,7 @@ class CreateGroupsTable extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreignId('lecturer_id')->references('id')->on('lecturers')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });
