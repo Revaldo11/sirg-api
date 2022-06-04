@@ -15,10 +15,10 @@ use Illuminate\Database\QueryException;
 
 class AdminController extends Controller
 {
+
+    // Method get all users
     public function index()
     {
-
-        // get all users
         $users = DB::table('users')
             ->rightJoin('roles', 'users.role_id', '=', 'roles.id')
             ->select('users.*', 'roles.name as role')
@@ -30,9 +30,11 @@ class AdminController extends Controller
         ], 200);
     }
 
+    // method add user
     public function register(Request $request)
     {
         try {
+            // validate request
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'max:255', 'email', 'unique:users'],
@@ -46,6 +48,7 @@ class AdminController extends Controller
                 'email' => $request->email,
                 'role_id' => $request->role_id,
                 'password' => Hash::make($request->password),
+                'remember_token' => $request->remember_token,
             ]);
 
             $user = User::where('email', $request->email)->first();
@@ -65,6 +68,8 @@ class AdminController extends Controller
         }
     }
 
+
+    // Method delete user 
     public function delete($id)
     {
         try {

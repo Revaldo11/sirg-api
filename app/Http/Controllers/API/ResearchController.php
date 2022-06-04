@@ -102,27 +102,61 @@ class ResearchController extends Controller
 
     public function update(Request $request, $id)
     {
+        $riset = Research::find($id);
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'date' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:255'],
-            'file' => ['nullable', 'string', 'max:255'],
+            'file' => ['nullable', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
         ]);
-        $riset = Research::find($id);
 
-        if ($riset) {
+        if (Research::where('title', $request->title)->first()) {
+            return ResponseFormatter::error(404, 'Riset already exists');
+        }
+
+        try {
+            if ($request->file('file')) {
+                $file = $request->file('file')->getClientOriginalName();
+                $file_name = pathinfo($file, PATHINFO_FILENAME);
+                $file_extension = $request->file('file')->getClientOriginalExtension();
+                $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+                $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+                $data['file'] = $file_name_to_store;
+            }
             $riset->update($data);
+            $riset->save();
 
             return ResponseFormatter::success([
                 'data' => $riset,
-                'message' => 'Data riset berhasil di update',
+                'message' => 'Data riset berhasil diubah',
             ]);
-        } else {
+        } catch (QueryException $error) {
             return ResponseFormatter::error([
-                'data' => null,
-                'message' => 'Data riset tidak ditemukan',
-            ], 400);
+                'message' => 'Error',
+                'data' => $error,
+            ], 'Terjadi kesalahan saat mengubah data', 500);
+
+            // if ($riset) {
+            //     $riset->update($data);
+
+            //     if ($request->file('file')) {
+            //         $file = $request->file('file')->getClientOriginalName();
+            //         $file_name = pathinfo($file, PATHINFO_FILENAME);
+            //         $file_extension = $request->file('file')->getClientOriginalExtension();
+            //         $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+            //         $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+            //         $riset->file = $file_name_to_store;
+            //     }
+
+            //     $riset->save();
+            //     return ResponseFormatter::success([
+            //         'data' => $riset,
+            //         'message' => 'Data riset berhasil diubah',
+            //     ]);
+            // } else {
+            //     return ResponseFormatter::error(404, 'Riset not found');
+            // }
         }
     }
 

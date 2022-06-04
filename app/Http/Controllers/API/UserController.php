@@ -17,7 +17,7 @@ class UserController extends Controller
         try {
             $request->validate([
                 'email' => ['required'],
-                'password' => ['required']
+                'password' => ['required'],
             ]);
 
 
@@ -38,6 +38,14 @@ class UserController extends Controller
                 'error' => $error,
             ], 'Authentication Failed', 500);
         }
+    }
+
+    public function attemptLogin(Request $request)
+    {
+        return $this->guard()->attempt(
+            $this->credentials($request),
+            $request->has('remember_token')
+        );
     }
 
     public function updateProfile(Request $request)
