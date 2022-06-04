@@ -1,15 +1,14 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\GroupController;
+use App\Http\Controllers\API\JudulPaController;
+use App\Http\Controllers\API\CreationController;
 use App\Http\Controllers\API\LecturerController;
 use App\Http\Controllers\API\ResearchController;
-use App\Http\Controllers\API\CreationController;
-use App\Http\Controllers\API\JudulPaController;
-use App\Models\Lecturer;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +25,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('admin', [AdminController::class, 'index'])->middleware('isAdmin')->name('Admin');
     Route::delete('admin/{id}', [AdminController::class, 'delete'])->middleware('isAdmin')->name('Admin');
     Route::post('dosen/register', [LecturerController::class, 'store'])->middleware('isAdmin')->name('Lecturer');
+    Route::post('role/create', [RoleController::class, 'store'])->middleware('isAdmin')->name('Role');
     Route::post('users', [UserController::class, 'updateProfile'])->name('User');
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('create', [GroupController::class, 'store']);

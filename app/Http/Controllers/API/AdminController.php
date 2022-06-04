@@ -9,6 +9,7 @@ use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\Rules\Password;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 
@@ -56,10 +57,10 @@ class AdminController extends Controller
                 'type' => 'Bearer',
                 'user' => $user,
             ], 'User registered successfully');
-        } catch (QueryException $error) {
+        } catch (Exception $e) {
             return ResponseFormatter::error([
                 'message' => 'Something went wrong',
-                'error' => $error,
+                'error' => $e->getMessage() . 'User not registered',
             ], 'Authentication failed', 500);
         }
     }

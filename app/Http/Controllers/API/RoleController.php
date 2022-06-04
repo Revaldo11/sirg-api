@@ -18,4 +18,23 @@ class RoleController extends Controller
         ];
         return response()->json($response, Response::HTTP_OK);
     }
+
+    public function store(Request $request)
+    {
+        if ($request->has('name')) {
+            $role = new Role;
+            $role->name = $request->input('name');
+            $role->save();
+            $response = [
+                'message' => 'Data role berhasil ditambahkan',
+                'role' => $role,
+            ];
+            return response()->json($response, Response::HTTP_OK);
+        } else {
+            $response = [
+                'message' => 'Data role gagal ditambahkan',
+            ];
+            return response()->json($response, Response::HTTP_BAD_REQUEST);
+        }
+    }
 }
