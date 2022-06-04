@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Group;
 use App\Models\Research;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -145,17 +146,26 @@ class ResearchController extends Controller
         }
     }
 
-    public function download($filename)
+    public function download(Request $request, $id)
     {
-        $riset = Research::where('file', $filename)->first();
+        $riset = Research::find($id);
 
         if ($riset) {
             $file = $riset->file;
             $path = public_path('public/files/' . $file);
-            $file_name = pathinfo($file, PATHINFO_FILENAME);
-            $file_extension = pathinfo($file, PATHINFO_EXTENSION);
-            $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-            return response()->download($path, $file_name_to_store);
+            $file_name = "riset.txt";
+            $headers = [
+                'Content-Type' => 'plain/text',
+                'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
+                'Content-Length' => strlen($path),
+            ];
+            return response()->download($path, $file_name, $headers);
+            // return response()->download($path, $file_name_to_store);
+
+            return ResponseFormatter::success([
+                'data' => $riset,
+                'message' => 'Data riset berhasil di download',
+            ]);
         } else {
             return ResponseFormatter::error([
                 'data' => null,
@@ -164,3 +174,13 @@ class ResearchController extends Controller
         }
     }
 }
+
+
+//     $file = public_path('public/files/' . $filename);
+    //     $headers = [
+    //         'Content-Type' => 'text/plain',
+    //         'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    //         'Content-Length' => strlen($file),
+    //     ];
+    //     return response()->download($file, $filename, $headers);
+    // }
