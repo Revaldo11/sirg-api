@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\User;
-use App\Models\Group;
 use App\Models\Research;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+// use Illuminate\Http\Response;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class ResearchController extends Controller
 {
@@ -146,34 +144,85 @@ class ResearchController extends Controller
         }
     }
 
-    public function download(Request $request, $id)
+    public function download($id)
     {
         $riset = Research::find($id);
 
-        if ($riset) {
-            $file = $riset->file;
-            $path = public_path('public/files/' . $file);
-            $file_name = "riset.txt";
-            $headers = [
-                'Content-Type' => 'plain/text',
-                'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
-                'Content-Length' => strlen($path),
-            ];
-            return response()->download($path, $file_name, $headers);
-            // return response()->download($path, $file_name_to_store);
+        try {
+            if ($riset) {
+                $file = public_path('public/files/' . $riset->file);
+                $file_name = pathinfo($file, PATHINFO_FILENAME);
+                $content = "Contoh file download" . $file_name;
 
-            return ResponseFormatter::success([
-                'data' => $riset,
-                'message' => 'Data riset berhasil di download',
-            ]);
-        } else {
+                $fileName = $file_name . '.txt';
+
+                $headers = [
+                    'Content-Type' => 'plain/text',
+                    'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                    'Content-Length' => strlen($content),
+                ];
+                return Response::make($content, 200, $headers);
+            } else {
+                return ResponseFormatter::error([
+                    'data' => null,
+                    'message' => 'Data riset tidak ditemukan',
+                ], 400);
+            }
+        } catch (QueryException $error) {
             return ResponseFormatter::error([
-                'data' => null,
-                'message' => 'Data riset tidak ditemukan',
-            ], 400);
+                'message' => 'Error',
+                'data' => $error,
+            ], 'Terjadi kesalahan saat mengunduh file', 500);
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
+    // {
+    // $logs = Research::where('file', $filename)->first();
+
+    // // prepare content
+    // $file = public_path('public/files/' . $id);
+    // $file_name = pathinfo($file, PATHINFO_FILENAME);
+    // $content = "Ini adalah isi konten dari file name : " . $file_name;
+
+    // // file name that will be used in the download
+    // $fileName = "logs.txt";
+
+    // // use headers in order to generate the download
+    // $headers = [
+    //     'Content-type' => 'text/plain',
+    //     'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+    //     'Content-Length' => strlen($content),
+    // ];
+
+    // // make a response, with the content, a 200 response code and the headers
+    // return Response::make($content, 200, $headers);
+
+    // $riset = Research::where('file', $filename)->first();
+    // if ($riset) {
+    //     $file = $riset->file;
+    //     $path = public_path('public/files/' . $file);
+    //     $file_name = pathinfo($file, PATHINFO_FILENAME);
+    //     $headers = [
+    //         'Content-Type' => 'application/pdf',
+    //         'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
+    //         'Content-Length' => strlen($path),
+    //     ];
+    //     return response()->download($path, $file_name, $headers);
+    //     // return response()->download($path, $file_name_to_store);
+
+    //     return ResponseFormatter::success([
+    //         'data' => $riset,
+    //         'message' => 'Data riset berhasil di download',
+    //     ]);
+    // } else {
+    //     return ResponseFormatter::error([
+    //         'data' => null,
+    //         'message' => 'Data riset tidak ditemukan',
+    //     ], 400);
+    // }
 }
+// }
 
 
 //     $file = public_path('public/files/' . $filename);
