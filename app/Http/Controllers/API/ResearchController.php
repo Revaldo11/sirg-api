@@ -4,13 +4,13 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Research;
 use Illuminate\Http\Request;
-// use Illuminate\Http\Response;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Response;
+
 
 class ResearchController extends Controller
 {
@@ -65,15 +65,15 @@ class ResearchController extends Controller
                 'date' => ['required', 'string'],
                 'author' => ['required', 'string', 'max:255'],
                 'file' => ['required', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
-                'group_id' => ['required', 'integer'],
+                // 'group_id' => ['required', 'integer'],
             ]);
-
 
             $file = $request->file('file')->getClientOriginalName();
             $file_name = pathinfo($file, PATHINFO_FILENAME);
             $file_extension = $request->file('file')->getClientOriginalExtension();
             $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
             $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+
 
             Research::create([
                 'title' => $request->title,
@@ -82,7 +82,7 @@ class ResearchController extends Controller
                 'author' => $request->author,
                 'file' => $file_name_to_store,
                 'user_id' => Auth::user()->id,
-                'group_id' => $request->group_id,
+                'group_id' => Auth::user()->groups->id,
             ]);
 
             $riset = Research::where('title', $request->title)->first();
@@ -106,7 +106,8 @@ class ResearchController extends Controller
             'description' => ['nullable', 'string', 'max:255'],
             'date' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:255'],
-            'file' => ['nullable', 'string', 'max:255'],
+            'file' => ['required', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
+
         ]);
         $riset = Research::find($id);
 
@@ -152,12 +153,13 @@ class ResearchController extends Controller
             if ($riset) {
                 $file = public_path('public/files/' . $riset->file);
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
-                $content = "Contoh file download" . $file_name;
+                $content = file_get_contents($file);
+                // $content = "Contoh file download" . $file_name;
 
-                $fileName = $file_name . '.txt';
+                $fileName = $file_name . '.pdf';
 
                 $headers = [
-                    'Content-Type' => 'plain/text',
+                    'Content-Type' => 'application/pdf',
                     'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
                     'Content-Length' => strlen($content),
                 ];
@@ -177,59 +179,9 @@ class ResearchController extends Controller
             //throw $th;
         }
     }
-    // {
-    // $logs = Research::where('file', $filename)->first();
 
-    // // prepare content
-    // $file = public_path('public/files/' . $id);
-    // $file_name = pathinfo($file, PATHINFO_FILENAME);
-    // $content = "Ini adalah isi konten dari file name : " . $file_name;
-
-    // // file name that will be used in the download
-    // $fileName = "logs.txt";
-
-    // // use headers in order to generate the download
-    // $headers = [
-    //     'Content-type' => 'text/plain',
-    //     'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
-    //     'Content-Length' => strlen($content),
-    // ];
-
-    // // make a response, with the content, a 200 response code and the headers
-    // return Response::make($content, 200, $headers);
-
-    // $riset = Research::where('file', $filename)->first();
-    // if ($riset) {
-    //     $file = $riset->file;
-    //     $path = public_path('public/files/' . $file);
-    //     $file_name = pathinfo($file, PATHINFO_FILENAME);
-    //     $headers = [
-    //         'Content-Type' => 'application/pdf',
-    //         'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
-    //         'Content-Length' => strlen($path),
-    //     ];
-    //     return response()->download($path, $file_name, $headers);
-    //     // return response()->download($path, $file_name_to_store);
-
-    //     return ResponseFormatter::success([
-    //         'data' => $riset,
-    //         'message' => 'Data riset berhasil di download',
-    //     ]);
-    // } else {
-    //     return ResponseFormatter::error([
-    //         'data' => null,
-    //         'message' => 'Data riset tidak ditemukan',
-    //     ], 400);
-    // }
+    public function generatepdf($id)
+    {
+        //
+    }
 }
-// }
-
-
-//     $file = public_path('public/files/' . $filename);
-    //     $headers = [
-    //         'Content-Type' => 'text/plain',
-    //         'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-    //         'Content-Length' => strlen($file),
-    //     ];
-    //     return response()->download($file, $filename, $headers);
-    // }
