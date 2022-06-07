@@ -29,7 +29,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('users', [UserController::class, 'updateProfile'])->name('User');
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('create', [GroupController::class, 'store']);
-    // Route::post('admin/register', [AdminController::class, 'register'])->middleware('isAdmin')->name('Admin');
+    Route::post('admin/register', [AdminController::class, 'register'])->middleware('isAdmin')->name('Admin');
     Route::post('riset/create', [ResearchController::class, 'create']);
     Route::delete('riset/{id}', [ResearchController::class, 'delete']);
     Route::post('riset/{id}', [ResearchController::class, 'update']);
@@ -39,8 +39,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('karya/{id}', [CreationController::class, 'delete']);
 });
 
-Route::post('admin/register', [AdminController::class, 'register']);
-Route::get('group', [GroupController::class, 'all']);
+// Route::post('admin/register', [AdminController::class, 'register']);
+Route::get('group/{id}', [GroupController::class, 'all']);
 Route::get('riset', [ResearchController::class, 'all']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('login-dosen', [LecturerController::class, 'loginDosen']);
@@ -48,5 +48,5 @@ Route::get('dosen', [LecturerController::class, 'index']);
 Route::get('riset/{id}', [ResearchController::class, 'download']);
 Route::get('karya', [CreationController::class, 'all']);
 Route::post('karya/create', [CreationController::class, 'create']);
-Route::get('judulpa', [JudulPaController::class, 'index']);
-Route::post('judulpa/create', [JudulPaController::class, 'create']);
+Route::get('judul-pa', [JudulPaController::class, 'index']);
+Route::post('judul-pa/create', [JudulPaController::class, 'create']);
