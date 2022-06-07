@@ -27,31 +27,32 @@ class ResearchController extends Controller
 
         // mengambil data riset berdasarkan id
         if ($id) {
-            $riset = Research::find($id);
+            $riset = Research::with('groups')->find($id);
             if ($riset) {
                 return ResponseFormatter::success([
                     'data' => $riset,
-                    'message' => 'Data group berhasil di ambil',
+                    'message' => 'Data riset berdasarkan id ditemukan',
                 ]);
             } else {
-                return ResponseFormatter::error(404, 'Riset not found');
+                return ResponseFormatter::error([
+                    'message' => 'Data riset berdasarkan id tidak ditemukan',
+                ], 400);
             }
         }
 
         // mengambil data riset berdasarkan title
-        if ($title) {
-            $riset = Research::where('title', 'like', '%' . $title . '%')->get();
-            if ($riset) {
-                return ResponseFormatter::success([
-                    'data' => $riset,
-                    'message' => 'Data riset berhasil di ambil',
-                ]);
-            }
+        $riset = Research::with('groups')->get();
+        if ($request->title) {
+            $riset = Research::where('title', 'LIKE', '%' . $request->title . '%')->get();
+            return ResponseFormatter::success([
+                'data' => $riset,
+                'message' => 'Data riset berdasarkan keyword ditemukan',
+            ], 200);
         }
 
         return ResponseFormatter::success([
             'data' => $riset,
-            'message' => 'Data riset berhasil di ambil',
+            'message' => 'Semua data riset berhasil di ambil',
         ], 200);
     }
 
