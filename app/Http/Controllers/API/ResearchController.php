@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Response;
 
-
 class ResearchController extends Controller
 {
     public function all(Request $request)
@@ -102,31 +101,49 @@ class ResearchController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = $request->validate([
+
+        $request->validate([
             'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'date' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:255'],
-            'file' => ['required', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
-
+            'file' => ['nullable', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
+            // 'group_id' => ['required', 'integer'],
         ]);
-        $riset = Research::find($id);
 
-        if ($riset) {
-            $riset->update($data);
+        try {
+            $riset = Research::find($id);
+            $riset->update([
+                'title' =>  $request->title,
+                'description' => $request->description,
+                'date' => $request->date,
+                'author' => $request->author,
+                // 'file' => $file_name_to_store,
+                'user_id' => Auth::user()->id,
+            ]);
+
+            if ($request->file('file')) {
+                $file = $request->file('file')->getClientOriginalName();
+                $file_name = pathinfo($file, PATHINFO_FILENAME);
+                $file_extension = $request->file('file')->getClientOriginalExtension();
+                $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+                $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+                $riset->update([
+                    'file' => $file_name_to_store,
+                ]);
+            }
 
             return ResponseFormatter::success([
                 'data' => $riset,
-                'message' => 'Data riset berhasil di update',
+                'message' => 'Data riset berhasil diubah',
             ]);
-        } else {
+        } catch (QueryException $error) {
             return ResponseFormatter::error([
-                'data' => null,
-                'message' => 'Data riset tidak ditemukan',
-            ], 400);
+                'message' => 'Error',
+                'data' => $error,
+            ], 'Terjadi kesalahan saat mengubah data', 500);
         }
     }
-
     public function delete($id)
     {
         $riset = Research::find($id);
