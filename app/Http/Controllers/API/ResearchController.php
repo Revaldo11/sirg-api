@@ -118,7 +118,6 @@ class ResearchController extends Controller
                 'description' => $request->description,
                 'date' => $request->date,
                 'author' => $request->author,
-                // 'file' => $file_name_to_store,
                 'user_id' => Auth::user()->id,
             ]);
 
