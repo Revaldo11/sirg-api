@@ -20,8 +20,14 @@ class Research extends Model
         'group_id',
     ];
 
-    public function group()
+
+    public function groups()
     {
-        return $this->belongsTo(Group::class);
+        return $this->hasOne(Group::class);
+    }
+
+    public function lecturers()
+    {
+        return $this->hasMany(Lecturer::class);
     }
 }
