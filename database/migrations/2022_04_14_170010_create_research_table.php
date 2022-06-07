@@ -20,8 +20,8 @@ class CreateResearchTable extends Migration
             $table->string('date');
             $table->string('author');
             $table->string('file')->nullable();
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('group_id')->references('id')->on('groups')->cascadeOnDelete();
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->timestamps();
         });
     }
