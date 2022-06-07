@@ -172,12 +172,12 @@ class ResearchController extends Controller
                 $file = public_path('public/files/' . $riset->file);
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
                 $content = file_get_contents($file);
-                // $content = "Contoh file download" . $file_name;
+                $content = "Contoh file download" . $file_name;
 
-                $fileName = $file_name . '.pdf';
+                $fileName = $file_name . '.txt';
 
                 $headers = [
-                    'Content-Type' => 'application/pdf',
+                    'Content-Type' => 'plain/text',
                     'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
                     'Content-Length' => strlen($content),
                 ];
