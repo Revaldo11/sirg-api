@@ -9,15 +9,16 @@ use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\Rules\Password;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 
 class AdminController extends Controller
 {
+
+    // Method get all users
     public function index()
     {
-
-        // get all users
         $users = DB::table('users')
             ->rightJoin('roles', 'users.role_id', '=', 'roles.id')
             ->select('users.*', 'roles.name as role')
@@ -29,9 +30,11 @@ class AdminController extends Controller
         ], 200);
     }
 
+    // method add user
     public function register(Request $request)
     {
         try {
+            // validate request
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'max:255', 'email', 'unique:users'],
@@ -45,6 +48,7 @@ class AdminController extends Controller
                 'email' => $request->email,
                 'role_id' => $request->role_id,
                 'password' => Hash::make($request->password),
+                'remember_token' => $request->remember_token,
             ]);
 
             $user = User::where('email', $request->email)->first();
@@ -56,14 +60,16 @@ class AdminController extends Controller
                 'type' => 'Bearer',
                 'user' => $user,
             ], 'User registered successfully');
-        } catch (QueryException $error) {
+        } catch (Exception $e) {
             return ResponseFormatter::error([
                 'message' => 'Something went wrong',
-                'error' => $error,
+                'error' => $e->getMessage() . 'User not registered',
             ], 'Authentication failed', 500);
         }
     }
 
+
+    // Method delete user 
     public function delete($id)
     {
         try {
