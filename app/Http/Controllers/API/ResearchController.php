@@ -108,7 +108,6 @@ class ResearchController extends Controller
             'date' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:255'],
             'file' => ['nullable', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
-            // 'group_id' => ['required', 'integer'],
         ]);
 
         try {
