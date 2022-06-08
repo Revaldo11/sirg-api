@@ -29,7 +29,7 @@ class GroupController extends Controller
             if ($group) {
                 return ResponseFormatter::success([
                     'data' => $group,
-                    'message' => 'Data group berhasil di ambil',
+                    'message' => 'Data group berhasil di ambil by id',
                 ]);
             } else {
                 return ResponseFormatter::error(404, 'Group not found');

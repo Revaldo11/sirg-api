@@ -50,12 +50,47 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
+
         $user = Auth::user();
-        $user->update($request->all());
-        return ResponseFormatter::success([
-            'message' => 'Success',
-            'data' => $user
-        ], 'Data user berhasil di update', 200);
+        $data = $request->validate([
+            'name' => ['nullable', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:255', 'unique:users'],
+            'email' => ['nullable', 'string', 'max:255', 'email', 'unique:users'],
+
+        ]);
+
+        try {
+            $user->update($data);
+            return ResponseFormatter::success([
+                'data' => $user,
+                'message' => 'Data user berhasil di update',
+            ], 200);
+        } catch (QueryException $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error,
+            ], 'Update Failed', 500);
+        } catch (QueryException $e) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $e,
+            ], 'Update Failed', 500);
+        }
+
+        // return ResponseFormatter::success([
+        //     'data' => $user,
+        //     'message' => 'Data user berhasil di update',
+        // ], 200);
+
+
+
+
+        // $user = Auth::user();
+        // $user->update($request->all());
+        // return ResponseFormatter::success([
+        //     'message' => 'Success',
+        //     'data' => $user
+        // ], 'Data user berhasil di update', 200);
     }
 
     public function logout(Request $request)
