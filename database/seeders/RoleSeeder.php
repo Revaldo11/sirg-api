@@ -16,21 +16,13 @@ class RoleSeeder extends Seeder
     {
         Role::create([
             'name' => 'admin',
-<<<<<<< HEAD
-=======
             'created_at' => now(),
             'updated_at' => now(),
->>>>>>> origin/develop
         ]);
-
         Role::create([
-<<<<<<< HEAD
             'name' => 'admin rg',
-=======
-            'name' => 'user',
             'created_at' => now(),
             'updated_at' => now(),
->>>>>>> origin/develop
         ]);
     }
 }
