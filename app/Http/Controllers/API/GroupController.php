@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use Exception;
-use App\Models\User;
 use App\Models\Group;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
@@ -21,23 +19,41 @@ class GroupController extends Controller
             ->join('users', 'groups.user_id', '=', 'users.id')
             ->select('groups.*', 'users.name as user_name')
             ->get();
-        $id = $request->input('id');
 
-        // mengambil data group berdasarkan id
+        $id = $request->input('id');
+        $title = $request->input('title');
+
         if ($id) {
             $group = Group::find($id);
             if ($group) {
                 return ResponseFormatter::success([
                     'data' => $group,
                     'message' => 'Data group berhasil di ambil by id',
-                ]);
+                ], 200);
             } else {
-                return ResponseFormatter::error(404, 'Group not found');
+                return ResponseFormatter::error([
+                    'message' => 'Data group tidak ditemukan',
+                ], 400);
             }
         }
 
+        if ($title) {
+            $group = Group::where('title', 'like', '%' . $title . '%')->get();
+            if ($group) {
+                return ResponseFormatter::success([
+                    'data' => $group,
+                    'message' => 'Data group berhasil di ambil by title',
+                ], 200);
+            } else {
+                return ResponseFormatter::error([
+                    'message' => 'Data group tidak ditemukan',
+                ], 400);
+            }
+        }
+
+        $groupList = Group::paginate(3);
         return ResponseFormatter::success([
-            'data' => $group,
+            'data' => $groupList,
             'message' => 'Data group berhasil di ambil',
         ], 200);
     }
@@ -63,8 +79,6 @@ class GroupController extends Controller
                 'description' => $request->description,
                 'user_id' => Auth::user()->id,
             ]);
-
-            // $group = Group::where('user_id', $request->user_id)->exists();
 
             $group = Group::where('title', $request->title)->first();
             return ResponseFormatter::success([
