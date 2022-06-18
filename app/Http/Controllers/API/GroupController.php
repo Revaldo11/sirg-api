@@ -17,8 +17,7 @@ class GroupController extends Controller
     {
         $group = DB::table('groups')
             ->join('users', 'groups.user_id', '=', 'users.id')
-            ->select('groups.*', 'users.name as user_name')
-            ->get();
+            ->select('groups.*', 'users.name as user_name')->paginate(10);
 
         $id = $request->input('id');
         $title = $request->input('title');
@@ -51,11 +50,16 @@ class GroupController extends Controller
             }
         }
 
-        $groupList = Group::paginate(3);
         return ResponseFormatter::success([
-            'data' => $groupList,
-            'message' => 'Data group berhasil di ambil',
+            'data' => $group,
+            'message' => 'Semua data group berhasil di ambil',
         ], 200);
+
+        // $groupList = Group::paginate(3);
+        // return ResponseFormatter::success([
+        //     'data' => $groupList,
+        //     'message' => 'Data group berhasil di ambil',
+        // ], 200);
     }
 
     public function store(Request $request)
@@ -79,6 +83,7 @@ class GroupController extends Controller
                 'description' => $request->description,
                 'user_id' => Auth::user()->id,
             ]);
+
 
             $group = Group::where('title', $request->title)->first();
             return ResponseFormatter::success([
