@@ -18,10 +18,10 @@ class Group extends Model
         'research_id',
     ];
 
-    // public function research()
-    // {
-    //     return $this->hasMany(Research::class,);
-    // }
+    public function research()
+    {
+        return $this->hasMany(Research::class,);
+    }
 
     public function lecturer()
     {
