@@ -40,7 +40,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 // Route::post('admin/register', [AdminController::class, 'register']);
-Route::get('group/{id}', [GroupController::class, 'all']);
+Route::get('group', [GroupController::class, 'all']);
 Route::get('riset', [ResearchController::class, 'all']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('login-dosen', [LecturerController::class, 'loginDosen']);
