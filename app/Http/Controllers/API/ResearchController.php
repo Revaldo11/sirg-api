@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\User;
 use App\Models\Research;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 class ResearchController extends Controller
 {
@@ -19,7 +21,9 @@ class ResearchController extends Controller
         // Get all the research
         $riset = DB::table('research')
             ->join('groups', 'research.group_id', '=', 'groups.id')
+            ->join('users', 'groups.user_id', '=', 'users.id')
             ->select('research.*', 'groups.title as group_name')
+            ->select('research.*', 'groups.title as group_name', 'users.name as user_name')
             ->get();
         $id = $request->input('id');
         $title = $request->input('title');
@@ -40,13 +44,18 @@ class ResearchController extends Controller
         }
 
         // mengambil data riset berdasarkan title
-        $riset = Research::with('groups')->get();
-        if ($request->title) {
-            $riset = Research::where('title', 'LIKE', '%' . $request->title . '%')->get();
-            return ResponseFormatter::success([
-                'data' => $riset,
-                'message' => 'Data riset berdasarkan keyword ditemukan',
-            ], 200);
+        if ($title) {
+            $riset = Research::where('title', 'like', '%' . $title . '%')->get();
+            if ($riset) {
+                return ResponseFormatter::success([
+                    'data' => $riset,
+                    'message' => 'Data group berhasil di ambil by title',
+                ], 200);
+            } else {
+                return ResponseFormatter::error([
+                    'message' => 'Data group tidak ditemukan',
+                ], 400);
+            }
         }
 
         return ResponseFormatter::success([
@@ -65,9 +74,13 @@ class ResearchController extends Controller
                 'date' => ['required', 'string'],
                 'author' => ['required', 'string', 'max:255'],
                 'file' => ['required', 'mimes:doc,docx,pdf,txt,csv', 'max:2048',],
-                // 'group_id' => ['required', 'integer'],
             ]);
 
+            if (Research::where('title', $request->title)->exists()) {
+                return ResponseFormatter::error([
+                    'message' => 'Data riset sudah ada',
+                ], 400);
+            }
             $file = $request->file('file')->getClientOriginalName();
             $file_name = pathinfo($file, PATHINFO_FILENAME);
             $file_extension = $request->file('file')->getClientOriginalExtension();
@@ -90,7 +103,7 @@ class ResearchController extends Controller
             return ResponseFormatter::success([
                 'data' => $riset,
                 'message' => 'Data riset berhasil ditambahkan',
-            ]);
+            ], 200);
         } catch (QueryException $error) {
             return ResponseFormatter::error([
                 'message' => 'Error',
@@ -118,9 +131,7 @@ class ResearchController extends Controller
             'author' => $request->author,
             'user_id' => Auth::user()->id,
         ]);
-        if (Research::where('title', $request->title)->first()) {
-            return ResponseFormatter::error(404, 'Riset already exists');
-        }
+
         try {
             if ($request->file('file')) {
                 $file = $request->file('file')->getClientOriginalName();
@@ -151,12 +162,20 @@ class ResearchController extends Controller
         $riset = Research::find($id);
 
         if ($riset) {
-            $riset->delete();
-
-            return ResponseFormatter::success([
-                'data' => $riset,
-                'message' => 'Data riset berhasil di hapus',
-            ]);
+            $riset = Research::where('user_id', Auth::user()->id)->find($id);
+            if ($riset) {
+                Storage::delete($riset);
+                unlink(public_path('public/files/' . $riset->file));
+                $riset->delete();
+                return ResponseFormatter::success([
+                    'message' => 'Data riset berhasil dihapus',
+                ], 200);
+            } else {
+                return ResponseFormatter::error([
+                    'data' => null,
+                    'message' => 'Data riset tidak ditemukan',
+                ], 400);
+            }
         } else {
             return ResponseFormatter::error([
                 'data' => null,
@@ -174,7 +193,7 @@ class ResearchController extends Controller
                 $file = public_path('public/files/' . $riset->file);
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
                 $content = file_get_contents($file);
-                $content = "Contoh file download" . $file_name;
+                $content = "Contoh file download " . $file_name;
 
                 $fileName = $file_name . '.txt';
 
@@ -198,10 +217,5 @@ class ResearchController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
-    }
-
-    public function generatepdf($id)
-    {
-        //
     }
 }

@@ -23,7 +23,7 @@ class Research extends Model
 
     public function groups()
     {
-        return $this->hasOne(Group::class);
+        return $this->belongsTo(Group::class);
     }
 
     public function lecturers()
