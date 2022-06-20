@@ -18,13 +18,13 @@ class Group extends Model
         'research_id',
     ];
 
-    public function research()
+    public function users()
     {
-        return $this->hasMany(Research::class,);
+        return $this->belongsTo(User::class);
     }
 
-    public function lecturer()
+    public function researchs()
     {
-        return $this->belongsToMany(Lecturer::class);
+        return $this->hasMany(Research::class);
     }
 }

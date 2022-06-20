@@ -54,12 +54,6 @@ class GroupController extends Controller
             'data' => $group,
             'message' => 'Semua data group berhasil di ambil',
         ], 200);
-
-        // $groupList = Group::paginate(3);
-        // return ResponseFormatter::success([
-        //     'data' => $groupList,
-        //     'message' => 'Data group berhasil di ambil',
-        // ], 200);
     }
 
     public function store(Request $request)
