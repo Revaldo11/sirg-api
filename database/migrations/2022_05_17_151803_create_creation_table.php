@@ -17,8 +17,6 @@ class CreateCreationTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
-            $table->unsignedBigInteger('group_id')->nullable();
-            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

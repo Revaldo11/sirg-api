@@ -13,6 +13,7 @@ class CreateResearchTable extends Migration
      */
     public function up()
     {
+        Schema::enableForeignKeyConstraints();
         Schema::create('research', function (Blueprint $table) {
             $table->id();
             $table->string('title');

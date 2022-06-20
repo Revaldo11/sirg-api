@@ -13,6 +13,7 @@ class CreateLecturerTable extends Migration
      */
     public function up()
     {
+        Schema::enableForeignKeyConstraints();
         Schema::create('lecturers', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('nip');
@@ -21,10 +22,8 @@ class CreateLecturerTable extends Migration
             $table->integer('year_lecturer');
             $table->string('community_service');
             $table->string('achievement_lecturer');
-            $table->string('password');
-            $table->string('path_photo')->nullable();
+            $table->string('img_url')->nullable();
             $table->foreignId('group_id')->references('id')->on('groups')->onDelete('cascade');
-            $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
         });

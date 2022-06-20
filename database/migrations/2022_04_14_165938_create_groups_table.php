@@ -13,6 +13,7 @@ class CreateGroupsTable extends Migration
      */
     public function up()
     {
+        Schema::enableForeignKeyConstraints();
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('title');
