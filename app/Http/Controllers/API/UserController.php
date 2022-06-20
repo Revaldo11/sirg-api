@@ -16,10 +16,16 @@ class UserController extends Controller
     {
         try {
             $request->validate([
-                'email' => ['required'],
+                'email' => ['required', 'email'],
                 'password' => ['required'],
             ]);
 
+            $credentials = request(['email', 'password']);
+            if (!Auth::attempt($credentials)) {
+                return ResponseFormatter::error([
+                    'message' => 'Unauthorized'
+                ], 'Authentication Failed', 500);
+            }
 
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password, [])) {
