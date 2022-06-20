@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Response;
@@ -86,7 +87,6 @@ class ResearchController extends Controller
             $file_extension = $request->file('file')->getClientOriginalExtension();
             $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
             $request->file('file')->move(public_path('public/files'), $file_name_to_store);
-
 
             Research::create([
                 'title' => $request->title,

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Research extends Model
 {
@@ -20,14 +19,8 @@ class Research extends Model
         'group_id',
     ];
 
-
     public function groups()
     {
         return $this->belongsTo(Group::class);
-    }
-
-    public function lecturers()
-    {
-        return $this->hasMany(Lecturer::class);
     }
 }
