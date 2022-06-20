@@ -19,18 +19,12 @@ class Lecturer extends Model
         'year_lecturer',
         'community_service',
         'achievement_lecturer',
-        'password',
-        'path_photo',
+        'img_url',
         'group_id',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    public function group()
+    public function groups()
     {
-        return $this->belongsToMany(Group::class);
+        $this->hasMany(Group::class);
     }
 }

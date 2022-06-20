@@ -6,10 +6,8 @@ use App\Models\Lecturer;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
-use Laravel\Fortify\Rules\Password;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 
 class LecturerController extends Controller
@@ -53,12 +51,17 @@ class LecturerController extends Controller
                 'year_lecturer' => ['required', 'string', 'max:255'],
                 'community_service' => ['required', 'string', 'max:255'],
                 'achievement_lecturer' => ['required', 'string', 'max:255'],
-                'password' => ['required', 'string', new Password],
-                'path_photo' => ['nullable', 'string', 'max:255'],
-                // 'group_id' => ['required', 'integer'],
+                'img_url' => ['image', 'mimes:jpeg,png,jpg', 'max:2048'],
             ]);
 
-            // Create user
+            if ($request->hasFile('img_url')) {
+                $file = $request->file('img_url');
+                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/image', $filename);
+                $request->merge(['img_url' => $filename]);
+            }
+
+            // Create dosen
             Lecturer::create([
                 'nip' => $request->nip,
                 'name' => $request->name,
@@ -66,19 +69,16 @@ class LecturerController extends Controller
                 'year_lecturer' => $request->year_lecturer,
                 'community_service' => $request->community_service,
                 'achievement_lecturer' => $request->achievement_lecturer,
-                'group_id' => Auth::user()->id,
-                'password' => Hash::make($request->password),
+                'img_url' => $request->img_url,
+                'group_id' => Auth::user()->groups->id,
             ]);
 
-            $dosen = Lecturer::where('name', $request->name)->first();
-            $tokenResult = $dosen->createToken('authToken')->plainTextToken;
-
+            $dosen = Lecturer::where('group_id', Auth::user()->groups->id)->get();
 
             return ResponseFormatter::success([
-                'token' => $tokenResult,
-                'type' => 'Bearer',
                 'dosen' => $dosen,
-            ], 'Dosen registered successfully');
+                'message' => 'Data dosen berhasil ditambahkan',
+            ], 'Dosen registered successfully', 200);
         } catch (QueryException $error) {
             return ResponseFormatter::error([
                 'message' => 'Something went wrong',
@@ -98,7 +98,6 @@ class LecturerController extends Controller
                 'community_service' => ['required', 'string', 'max:255'],
                 'achievement_lecturer' => ['required', 'string', 'max:255'],
                 'path_photo' => ['nullable', 'string', 'max:255'],
-                'group_id' => ['required', 'integer'],
             ]);
 
             $dosen = Lecturer::find($id);
@@ -139,35 +138,6 @@ class LecturerController extends Controller
             return ResponseFormatter::error([
                 'message' => 'Dosen not found',
             ], 404);
-        }
-    }
-
-    public function loginDosen(Request $request)
-    {
-        try {
-            $request->validate([
-                'nip' => ['required', 'string', 'max:255'],
-                'password' => ['required', 'string', 'max:255'],
-            ]);
-
-            $dosen = Lecturer::where('nip', $request->nip)->first();
-
-            if ($dosen) {
-                if (password_verify($request->password, $dosen->password)) {
-                    return ResponseFormatter::success([
-                        'dosen' => $dosen,
-                    ], 'Login success');
-                } else {
-                    return ResponseFormatter::error(401, 'Wrong password');
-                }
-            } else {
-                return ResponseFormatter::error(404, 'Dosen not found');
-            }
-        } catch (QueryException $error) {
-            return ResponseFormatter::error([
-                'message' => 'Something went wrong',
-                'error' => $error,
-            ], 'Authentication failed', 500);
         }
     }
 }
