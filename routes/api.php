@@ -25,7 +25,7 @@ use App\Models\Lecturer;
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('admin', [AdminController::class, 'index'])->middleware('isAdmin')->name('Admin');
     Route::delete('admin/{id}', [AdminController::class, 'delete'])->middleware('isAdmin')->name('Admin');
-    Route::post('dosen/register', [LecturerController::class, 'store'])->middleware('isAdmin')->name('Lecturer');
+    Route::post('dosen/create', [LecturerController::class, 'store'])->name('Lecturer');
     Route::post('users', [UserController::class, 'updateProfile'])->name('User');
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('create', [GroupController::class, 'store']);
