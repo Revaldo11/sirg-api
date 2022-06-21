@@ -55,10 +55,11 @@ class LecturerController extends Controller
             ]);
 
             if ($request->hasFile('img_url')) {
-                $file = $request->file('img_url');
-                $filename = time() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/image', $filename);
-                $request->merge(['img_url' => $filename]);
+                $file = $request->file('img_url')->getClientOriginalName();
+                $file_name = pathinfo($file, PATHINFO_FILENAME);
+                $file_extension = $request->file('img_url')->getClientOriginalExtension();
+                $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+                $request->file('img_url')->move(public_path('public/image'), $file_name_to_store);
             }
 
             // Create dosen
@@ -69,7 +70,7 @@ class LecturerController extends Controller
                 'year_lecturer' => $request->year_lecturer,
                 'community_service' => $request->community_service,
                 'achievement_lecturer' => $request->achievement_lecturer,
-                'img_url' => $request->img_url,
+                'img_url' => $file_name_to_store,
                 'group_id' => Auth::user()->groups->id,
             ]);
 
@@ -97,7 +98,7 @@ class LecturerController extends Controller
                 'year_lecturer' => ['required', 'string', 'max:255'],
                 'community_service' => ['required', 'string', 'max:255'],
                 'achievement_lecturer' => ['required', 'string', 'max:255'],
-                'path_photo' => ['nullable', 'string', 'max:255'],
+                'img_url' => ['nullable', 'string', 'max:255'],
             ]);
 
             $dosen = Lecturer::find($id);
