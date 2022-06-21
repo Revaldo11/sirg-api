@@ -83,14 +83,15 @@ class ResearchController extends Controller
                 ], 400);
             }
 
-            $fileName = $request->file->getClientOriginalName();
-            $path = $request->file('file')->move(public_path('/files'), $fileName);
-            $fileUrl = url('/files/' . $fileName);
-            // $file = $request->file('file')->getClientOriginalName();
-            // $file_name = pathinfo($file, PATHINFO_FILENAME);
-            // $file_extension = $request->file('file')->getClientOriginalExtension();
-            // $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-            // $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+            // $fileName = $request->file->getClientOriginalName();
+            // $path = $request->file('file')->move(public_path('/files'), $fileName);
+            // $fileUrl = url('/files/' . $fileName);
+            $file = $request->file('file')->getClientOriginalName();
+            $file_name = pathinfo($file, PATHINFO_FILENAME);
+            $file_extension = $request->file('file')->getClientOriginalExtension();
+            $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+            $path = $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+            $fileUrl = url('/public/files/' . $file_name_to_store);
 
             Research::create([
                 'title' => $request->title,
@@ -142,7 +143,7 @@ class ResearchController extends Controller
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
                 $file_extension = $request->file('file')->getClientOriginalExtension();
                 $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-                $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+                $request->file('file')->move(public_path('/files'), $file_name_to_store);
                 $riset->update([
                     'file' => $file_name_to_store,
                 ]);
@@ -169,7 +170,7 @@ class ResearchController extends Controller
             $riset = Research::where('user_id', Auth::user()->id)->find($id);
             if ($riset) {
                 Storage::delete($riset);
-                unlink(public_path('public/files/' . $riset->file));
+                unlink(public_path('files/' . $riset->file));
                 $riset->delete();
                 return ResponseFormatter::success([
                     'message' => 'Data riset berhasil dihapus',
@@ -194,7 +195,7 @@ class ResearchController extends Controller
 
         try {
             if ($riset) {
-                $file = public_path('public/files/' . $riset->file);
+                $file = public_path('/public/files/' . $riset->file);
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
                 $content = file_get_contents($file);
                 $content = "Contoh file download " . $file_name;
