@@ -82,18 +82,22 @@ class ResearchController extends Controller
                     'message' => 'Data riset sudah ada',
                 ], 400);
             }
-            $file = $request->file('file')->getClientOriginalName();
-            $file_name = pathinfo($file, PATHINFO_FILENAME);
-            $file_extension = $request->file('file')->getClientOriginalExtension();
-            $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-            $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+
+            $fileName = $request->file->getClientOriginalName();
+            $path = $request->file('file')->move(public_path('/files'), $fileName);
+            $fileUrl = url('/files/' . $fileName);
+            // $file = $request->file('file')->getClientOriginalName();
+            // $file_name = pathinfo($file, PATHINFO_FILENAME);
+            // $file_extension = $request->file('file')->getClientOriginalExtension();
+            // $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+            // $request->file('file')->move(public_path('public/files'), $file_name_to_store);
 
             Research::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'date' => $request->date,
                 'author' => $request->author,
-                'file' => $file_name_to_store,
+                'file' => $fileUrl,
                 'user_id' => Auth::user()->id,
                 'group_id' => Auth::user()->groups->id,
             ]);
