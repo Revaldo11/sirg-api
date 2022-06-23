@@ -45,7 +45,7 @@ Route::get('riset', [ResearchController::class, 'all']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('login-dosen', [LecturerController::class, 'loginDosen']);
 Route::get('dosen', [LecturerController::class, 'index']);
-Route::get('riset/{id}', [ResearchController::class, 'download']);
+Route::get('riset/{url}', [ResearchController::class, 'download']);
 Route::get('karya', [CreationController::class, 'all']);
 Route::post('karya/create', [CreationController::class, 'create']);
 Route::get('judul-pa', [JudulPaController::class, 'index']);

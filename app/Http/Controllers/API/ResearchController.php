@@ -143,9 +143,10 @@ class ResearchController extends Controller
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
                 $file_extension = $request->file('file')->getClientOriginalExtension();
                 $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-                $request->file('file')->move(public_path('/files'), $file_name_to_store);
+                $path = $request->file('file')->move(public_path('public/files'), $file_name_to_store);
+                $fileUrl = url('/public/files/' . $file_name_to_store);
                 $riset->update([
-                    'file' => $file_name_to_store,
+                    'file' => $fileUrl,
                 ]);
             }
             $riset->save();
@@ -189,38 +190,30 @@ class ResearchController extends Controller
         }
     }
 
-    public function download($id)
+    public function download($url)
     {
-        $riset = Research::find($id);
-
         try {
-            if ($riset) {
-                $file = public_path('/public/files/' . $riset->file);
-                $file_name = pathinfo($file, PATHINFO_FILENAME);
-                $content = file_get_contents($file);
-                $content = "Contoh file download " . $file_name;
+            $file = public_path('files/' . $url);
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $content = file_get_contents($file);
+            $content = "Contoh file download " . $fileName;
 
-                $fileName = $file_name . '.txt';
+            $file_name = $fileName . '.txt';
 
-                $headers = [
-                    'Content-Type' => 'plain/text',
-                    'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
-                    'Content-Length' => strlen($content),
-                ];
-                return Response::make($content, 200, $headers);
-            } else {
-                return ResponseFormatter::error([
-                    'data' => null,
-                    'message' => 'Data riset tidak ditemukan',
-                ], 400);
-            }
-        } catch (QueryException $error) {
+            $headers = array(
+                'Content-Type' => 'text/plain',
+                'Content-Disposition' => 'attachment; filename=' . $file_name,
+                'Content-Length' => strlen($content),
+            );
+
+            return response()->make($content, 200, $headers);
+
+            // return response()->download($file);
+        } catch (\Exception $e) {
             return ResponseFormatter::error([
                 'message' => 'Error',
-                'data' => $error,
+                'data' => $e,
             ], 'Terjadi kesalahan saat mengunduh file', 500);
-        } catch (\Throwable $th) {
-            //throw $th;
         }
     }
 }
