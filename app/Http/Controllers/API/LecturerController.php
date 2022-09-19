@@ -55,11 +55,12 @@ class LecturerController extends Controller
             ]);
 
             if ($request->hasFile('img_url')) {
-                $file = $request->file('img_url')->getClientOriginalName();
-                $file_name = pathinfo($file, PATHINFO_FILENAME);
-                $file_extension = $request->file('img_url')->getClientOriginalExtension();
-                $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-                $request->file('img_url')->move(public_path('public/image'), $file_name_to_store);
+                // $file = $request->file('img_url')->store('img_url');
+                // $file = $request->file('img_url')->getClientOriginalName();
+                // $file_name = pathinfo($file, PATHINFO_FILENAME);
+                // $file_extension = $request->file('img_url')->getClientOriginalExtension();
+                // $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
+                // $path = $request->file('img_url')->move('public/img_url', $file_name_to_store);
             }
 
             // Create dosen
@@ -70,7 +71,7 @@ class LecturerController extends Controller
                 'year_lecturer' => $request->year_lecturer,
                 'community_service' => $request->community_service,
                 'achievement_lecturer' => $request->achievement_lecturer,
-                'img_url' => $file_name_to_store,
+                'img_url' => $request->file('img_url')->store('images'),
                 'group_id' => Auth::user()->groups->id,
             ]);
 

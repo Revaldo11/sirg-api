@@ -90,8 +90,8 @@ class ResearchController extends Controller
             $file_name = pathinfo($file, PATHINFO_FILENAME);
             $file_extension = $request->file('file')->getClientOriginalExtension();
             $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-            $path = $request->file('file')->move(public_path('public/files'), $file_name_to_store);
-            $fileUrl = url('/public/files/' . $file_name_to_store);
+            $path = $request->file('file')->move(public_path('files/'), $file_name_to_store);
+            $fileUrl = url('files/' . $path);
 
             Research::create([
                 'title' => $request->title,
@@ -143,8 +143,8 @@ class ResearchController extends Controller
                 $file_name = pathinfo($file, PATHINFO_FILENAME);
                 $file_extension = $request->file('file')->getClientOriginalExtension();
                 $file_name_to_store = $file_name . '_' . time() . '.' . $file_extension;
-                $path = $request->file('file')->move(public_path('public/files'), $file_name_to_store);
-                $fileUrl = url('/public/files/' . $file_name_to_store);
+                $path = $request->file('file')->move(public_path('files/'), $file_name_to_store);
+                $fileUrl = url('files/' . $file_name_to_store);
                 $riset->update([
                     'file' => $fileUrl,
                 ]);
